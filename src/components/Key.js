@@ -31,8 +31,10 @@ class Key extends React.Component {
       <div className={btnWrapperClass}>
         <button
           id={this.props.id}
+          value={this.props.value}
           className={btnClass}
           style = {this.props.style}
+          onClick = {this.props.handleClick}
         >
           {this.props.value}
         </button>
