@@ -9,32 +9,110 @@ class Calculator extends React.Component {
     super(props);
     this.state = {
       display: "0",
-      history: "",
-      isReset: true
+      memory: "",
+      isReset: true,
+      isOperation: false,
+      lastEvaluation: "",
+      lastChar: ""
     };
   }
 
   handleClear = () => {
     this.setState({
       display: "0",
-      history: "",
-      isReset: true
+      memory: "",
+      isReset: true,
+      isOperation: false,
+      lastEvaluation: ""
     });
   };
 
   handleNumber = e => {
-    
     const inputNumber = e.currentTarget.getAttribute("value");
-    const display = this.state.display;
+    const startingDisplay = this.state.display;
+    const updatedDisplay = this.state.isReset
+      ? inputNumber
+      : startingDisplay.concat(inputNumber);
 
-    console.log(inputNumber + " " + display.includes(inputNumber));
-    if (this.checkZerosandPeriods(inputNumber, display)) {
+    if (this.checkZerosandPeriods(inputNumber, startingDisplay)) {
+    } else {
+      if (this.state.lastChar ==="=") {
+        this.handleClear();
+      }
+
+      this.setState({
+        display: this.state.lastChar ==="=" ? inputNumber : updatedDisplay,
+        isReset: false,
+        isOperation: false,
+        lastChar: inputNumber,
+      });
+    }
+  };
+
+  handleOperation = e => {
+    const inputOperation = e.currentTarget.getAttribute("value");
+    const startingDisplay = this.state.display;
+    const updatedDisplay = startingDisplay.concat(inputOperation);
+    console.log(inputOperation, this.state.display.slice(0, -1));
+
+    if(this.state.lastChar ==="="){
+      this.setState({
+        memory: this.state.lastEvaluation.concat(inputOperation),
+        lastChar:inputOperation,
+        display: inputOperation,
+        isOperation:true,
+        isReset:true,
+      })
+
+    }
+
+    else if (
+      inputOperation === this.state.display ||
+      inputOperation === this.state.display.slice(0, -1)
+    ) {
+      return;
+    } else if (!this.state.isOperation) {
+      this.setState({
+        memory: this.state.memory.concat(updatedDisplay),
+        display: inputOperation,
+        isReset: true,
+        isOperation: true,
+        lastChar: inputOperation,
+      });
+    } else if (inputOperation === "-" && !startingDisplay.includes("-")) {
+      this.setState({
+        memory: this.state.memory.concat(inputOperation),
+        display: updatedDisplay,
+        isReset: true,
+        isOperation: true,
+        lastChar: inputOperation,
+      });
     } else {
       this.setState({
-        display: this.state.isReset
-          ? inputNumber
-          : this.state.display.concat(inputNumber),
-        isReset: false
+        display: inputOperation,
+        memory: this.state.memory.slice(0, -2).concat(inputOperation),
+        lastChar: inputOperation,
+      });
+    }
+  };
+
+  handleEquals = e => {
+    console.log(this.state.lastChar)
+    const input = e.currentTarget.getAttribute("value");
+   
+    
+
+    console.log(`input: ${input} lastchar: ${this.state.lastChar}`)
+    if (input === this.state.lastChar) {
+      return;
+    } else {
+      const result = math.evaluate(this.state.memory.concat(this.state.display));
+      const resultString = result.toString();
+      this.setState({
+        display: resultString,
+        memory: `${this.state.memory}${this.state.display} = ${resultString}`,
+        lastEvaluation: resultString,
+        lastChar: input,
       });
     }
   };
@@ -49,7 +127,7 @@ class Calculator extends React.Component {
   };
 
   render() {
-    console.log(math.evaluate("123+48/9*99"));
+    console.log(math.evaluate("5 * - + 5"));
     return (
       <div className="flex items-center justify-center h-screen bg-gray-200 h-vh">
         <div className="px-2">
@@ -57,7 +135,10 @@ class Calculator extends React.Component {
             <div className="px-1">
               <div className="flex -mx-1  mt-4">
                 <div className="w-4/4 px-1 flex-grow ">
-                  <Display value={this.state.display} />
+                  <Display
+                    display={this.state.display}
+                    memory={this.state.memory}
+                  />
                 </div>
               </div>
             </div>
@@ -103,7 +184,13 @@ class Calculator extends React.Component {
               </div>
 
               <div className="flex-column w-1/4">
-                <Key wide color="light-grey" id="divide" value={"/"} />
+                <Key
+                  wide
+                  color="light-grey"
+                  id="divide"
+                  handleClick={this.handleOperation}
+                  value={"/"}
+                />
 
                 <div className="px-1">
                   <div className=" -mx-1 my-2">
@@ -148,16 +235,34 @@ class Calculator extends React.Component {
               </div>
 
               <div className="flex-column w-1/4 pr-1">
-                <Key wide color="light-grey" id="multiply" value={"X"} />
+                <Key
+                  wide
+                  color="light-grey"
+                  id="multiply"
+                  handleClick={this.handleOperation}
+                  value={"*"}
+                />
 
                 <div className="px-1">
                   <div className=" -mx-1 my-2">
-                    <Key wide color="light-grey" id="subtract" value={"-"} />
+                    <Key
+                      wide
+                      color="light-grey"
+                      id="subtract"
+                      handleClick={this.handleOperation}
+                      value={"-"}
+                    />
                   </div>
                 </div>
                 <div className="px-1">
                   <div className=" -mx-1 my-2">
-                    <Key wide color="light-grey" id="add" value={"+"} />
+                    <Key
+                      wide
+                      color="light-grey"
+                      id="add"
+                      handleClick={this.handleOperation}
+                      value={"+"}
+                    />
                   </div>
                 </div>
                 <div className="px-1">
@@ -166,6 +271,7 @@ class Calculator extends React.Component {
                       wide
                       color="blue"
                       id="equals"
+                      handleClick={this.handleEquals}
                       style={{ height: "6.5rem" }}
                       value={"="}
                     />
