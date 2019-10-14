@@ -6,7 +6,7 @@ class Key extends React.Component {
 
   render() {
  const btnWrapperClass = classNames({
-   "px-1":true,
+   
    "w-1/2":!this.props.wide,
    "w-2/2":this.props.wide
  })
@@ -14,11 +14,13 @@ class Key extends React.Component {
   "flex w-full",
   "justify-center",
   "items-center",
+"border-black",
+"border",
   "h-12",
   "cursor-default",
   "hover:text-black",
   "focus:outline-none",
-  "hover:shadow-outline",
+  "hover:border-gray-500",
   {
   "bg-gray-700": !this.props.color,
   "bg-gray-900": this.props.color === "light-grey",

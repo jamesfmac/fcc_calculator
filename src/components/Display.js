@@ -3,10 +3,11 @@ import React from "react";
 class Display extends React.Component {
   render() {
     return (
-      <div>
-         <div
+      <div className="flex-col p-1 bg-black justify-end h-auto border border-green-800 rounded-sm" style={{minHeight: "3rem"}}>
+        <div
           id="memory"
-          className="flex justify-end pr-1 text-xs text-green-600 font-mono items-center bg-black h-6"
+          className="flex justify-end pr-1 text-xs text-green-600 font-mono items-center bg-black h-auto"
+          style={{minHeight: "1.5rem"}}
         >
           {this.props.memory}
         </div>
