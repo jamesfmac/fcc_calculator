@@ -28,6 +28,11 @@ class Calculator extends React.Component {
   };
 
   handleNumber = e => {
+    
+    if (this.checkDisplayLength()){
+      this.showDisplayLimitReached()
+      return;
+    }
     const inputNumber = e.currentTarget.getAttribute("value");
     const startingDisplay = this.state.display;
     const updatedDisplay = this.state.isReset
@@ -101,16 +106,17 @@ class Calculator extends React.Component {
   };
 
   handleEquals = e => {
-    console.log(this.state.lastChar);
     const input = e.currentTarget.getAttribute("value");
 
     console.log(`input: ${input} lastchar: ${this.state.lastChar}`);
     if (input === this.state.lastChar) {
       return;
     } else {
-      const result = math.evaluate(
+      const answer = math.evaluate(
         this.state.memory.concat(this.state.display)
       );
+
+      const result = math.format(answer, { precision: 6 });
       const resultString = result.toString();
       this.setState({
         display: resultString,
@@ -130,68 +136,80 @@ class Calculator extends React.Component {
     }
   };
 
+  checkDisplayLength = () => {
+    return this.state.display.length > 22;
+  };
+
+  showDisplayLimitReached = () =>{
+    const originalDisplay = this.state.display
+    
+    this.setState({
+      display: "Display Limit Met"
+    })
+    setTimeout(() => this.setState({
+      display:originalDisplay,
+    }), 1000);
+  }
+
   render() {
     console.log(math.evaluate("5 * - + 5"));
     return (
       <div className="flex items-center justify-center h-screen bg-gray-200 h-vh">
-      
-          <div className="flex-column text-white align-middle text-center bg-black w-64 h-auto border rounded shadow-md ">
-           
-              <div className="flex mx-1 mt-2">
-                <div className="w-4/4 px-1 flex-grow ">
-                  <Display
-                    display={this.state.display}
-                    memory={this.state.memory}
-                  />
-                </div>
-           
+        <div className="flex-column text-white align-middle text-center bg-black w-64 h-auto border rounded shadow-md ">
+          <div className="flex mx-1 mt-2">
+            <div className="w-4/4 px-1 flex-grow ">
+              <Display
+                display={this.state.display}
+                memory={this.state.memory}
+              />
             </div>
+          </div>
 
-            <div className="flex  mx-1 my-2">
-              <div className="flex-column w-2/4 pl-1">
+          <div className="flex  mx-1 my-2">
+            <div className="flex-column w-2/4 pl-1">
+              <div className="">
                 <div className="">
-                  <div className="">
-                    <Key
-                      wide
-                      color="red"
-                      id="clear"
-                      handleClick={this.handleClear}
-                      value={"A/C"}
-                    />
-                  </div>
-                </div>
-
-                <div className="">
-                  <div className="flex">
-                    <Key id="seven" handleClick={this.handleNumber} value={7} />
-                    <Key id="eight" handleClick={this.handleNumber} value={8} />
-                  </div>
-                </div>
-                <div className="">
-                  <div className="flex">
-                    <Key id="four" handleClick={this.handleNumber} value={4} />
-                    <Key id="five" handleClick={this.handleNumber} value={5} />
-                  </div>
-                </div>
-                <div className="">
-                  <div className="flex">
-                    <Key id="one" handleClick={this.handleNumber} value={1} />
-                    <Key id="two" handleClick={this.handleNumber} value={2} />
-                  </div>
-                </div>
-                <div className="">
-                  <div className="">
-                    <Key
-                      wide
-                      id="zero"
-                      handleClick={this.handleNumber}
-                      value={0}
-                    />
-                  </div>
+                  <Key
+                    wide
+                    color="red"
+                    id="clear"
+                    handleClick={this.handleClear}
+                    value={"A/C"}
+                  />
                 </div>
               </div>
 
-              <div className="flex-column w-1/4">
+              <div className="">
+                <div className="flex">
+                  <Key id="seven" handleClick={this.handleNumber} value={7} />
+                  <Key id="eight" handleClick={this.handleNumber} value={8} />
+                </div>
+              </div>
+              <div className="">
+                <div className="flex">
+                  <Key id="four" handleClick={this.handleNumber} value={4} />
+                  <Key id="five" handleClick={this.handleNumber} value={5} />
+                </div>
+              </div>
+              <div className="">
+                <div className="flex">
+                  <Key id="one" handleClick={this.handleNumber} value={1} />
+                  <Key id="two" handleClick={this.handleNumber} value={2} />
+                </div>
+              </div>
+              <div className="">
+                <div className="">
+                  <Key
+                    wide
+                    id="zero"
+                    handleClick={this.handleNumber}
+                    value={0}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-column w-1/4">
               <div className="">
                 <Key
                   wide
@@ -200,87 +218,67 @@ class Calculator extends React.Component {
                   handleClick={this.handleOperation}
                   value={"/"}
                 />
-                </div>
+              </div>
 
+              <div className="">
                 <div className="">
-                  <div className="">
-                    <Key
-                      wide
-                      id="nine"
-                      handleClick={this.handleNumber}
-                      value={9}
-                    />
-                  </div>
+                  <Key
+                    wide
+                    id="nine"
+                    handleClick={this.handleNumber}
+                    value={9}
+                  />
                 </div>
-                
-                 
-                    <Key
-                      wide
-                      id="six"
-                      handleClick={this.handleNumber}
-                      value={6}
-                    />
-                  
-                
-              
-                    <Key
-                      wide
-                      id="three"
-                      handleClick={this.handleNumber}
-                      value={3}
-                    />
-               
-            
-                    <Key
-                      wide
-                      id="decimal"
-                      handleClick={this.handleNumber}
-                      value={"."}
-                    />
-                
               </div>
 
-              <div className="flex-column w-1/4 pr-1">
-                <Key
-                  wide
-                  color="light-grey"
-                  id="multiply"
-                  handleClick={this.handleOperation}
-                  value={"*"}
-                />
+              <Key wide id="six" handleClick={this.handleNumber} value={6} />
 
-            
-                    <Key
-                      wide
-                      color="light-grey"
-                      id="subtract"
-                      handleClick={this.handleOperation}
-                      value={"-"}
-                    />
-                
-                
-                    <Key
-                      wide
-                      color="light-grey"
-                      id="add"
-                      handleClick={this.handleOperation}
-                      value={"+"}
-                    />
-               
-                
-                    <Key
-                      wide
-                      color="blue"
-                      id="equals"
-                      handleClick={this.handleEquals}
-                      style={{ height: "6.0rem" }}
-                      value={"="}
-                    />
-                
-              </div>
+              <Key wide id="three" handleClick={this.handleNumber} value={3} />
+
+              <Key
+                wide
+                id="decimal"
+                handleClick={this.handleNumber}
+                value={"."}
+              />
+            </div>
+
+            <div className="flex-column w-1/4 pr-1">
+              <Key
+                wide
+                color="light-grey"
+                id="multiply"
+                handleClick={this.handleOperation}
+                value={"*"}
+              />
+
+              <Key
+                wide
+                color="light-grey"
+                id="subtract"
+                handleClick={this.handleOperation}
+                value={"-"}
+              />
+
+              <Key
+                wide
+                color="light-grey"
+                id="add"
+                handleClick={this.handleOperation}
+                value={"+"}
+              />
+
+              <Key
+                wide
+                color="blue"
+                id="equals"
+                handleClick={this.handleEquals}
+                style={{ height: "6.0rem" }}
+                value={"="}
+              />
             </div>
           </div>
-        
+        </div>
       </div>
     );
   }
