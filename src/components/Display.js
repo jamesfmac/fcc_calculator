@@ -3,7 +3,7 @@ import React from "react";
 class Display extends React.Component {
   render() {
     return (
-      <div className="flex-col p-1 bg-black justify-end h-auto border border-green-800 rounded-sm" style={{minHeight: "3rem"}}>
+      <div className="flex-col p-1 mt-3  bg-black justify-end h-auto border border-green-800 rounded-sm" style={{minHeight: "3rem"}}>
         <div
           id="memory"
           className="flex justify-end pr-1 text-xs text-green-600 font-mono items-center bg-black h-auto text-right"

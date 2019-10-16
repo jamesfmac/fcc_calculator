@@ -1,5 +1,5 @@
 import React from "react";
-import Key from "./Key";
+import Keyboard from "./Keyboard";
 import Display from "./Display";
 
 import * as math from "mathjs";
@@ -23,63 +23,74 @@ class Calculator extends React.Component {
       memory: "",
       isReset: true,
       isOperation: false,
-      lastEvaluation: ""
+      lastEvaluation: "",
+      lastChar: ""
+    });
+  };
+
+  handleEquals = e => {
+    const input = e.currentTarget.getAttribute("value");
+    if (input === this.state.lastChar || isNaN(this.state.display)) {
+      return;
+    }
+    const result = this.evaluateAndFormatExpression();
+
+    this.setState({
+      display: result,
+      memory: `${this.state.memory}${this.state.display} = ${result}`,
+      lastEvaluation: result,
+      lastChar: input
     });
   };
 
   handleNumber = e => {
-    
-    if (this.checkDisplayLength()){
-      this.showDisplayLimitReached()
-      return;
-    }
     const inputNumber = e.currentTarget.getAttribute("value");
     const startingDisplay = this.state.display;
-    const updatedDisplay = this.state.isReset
-      ? inputNumber
-      : startingDisplay.concat(inputNumber);
+    let newDisplay = "";
+
+    if (this.checkDisplayLength(this.state.display)) {
+      this.showDisplayLimitReached();
+      return;
+    }
 
     if (this.checkZerosandPeriods(inputNumber, startingDisplay)) {
-    } else if (this.state.display === "0") {
-      this.setState({
-        display: inputNumber,
-        isReset: false,
-        isOperation: false,
-        lastChar: inputNumber
-      });
-    } else {
-      if (this.state.lastChar === "=") {
-        this.handleClear();
-      }
-
-      this.setState({
-        display: this.state.lastChar === "=" ? inputNumber : updatedDisplay,
-        isReset: false,
-        isOperation: false,
-        lastChar: inputNumber
-      });
+      return;
     }
+
+    if (startingDisplay === "0" || this.state.isReset) {
+      newDisplay = inputNumber;
+    } else if (this.state.lastChar === "=") {
+      this.handleClear();
+      newDisplay = inputNumber;
+    } else {
+      newDisplay = startingDisplay.concat(inputNumber);
+    }
+
+    this.setState({
+      display: newDisplay,
+      isReset: false,
+      isOperation: false,
+      lastChar: inputNumber
+    });
   };
 
   handleOperation = e => {
     const inputOperation = e.currentTarget.getAttribute("value");
     const startingDisplay = this.state.display;
     const updatedDisplay = startingDisplay.concat(inputOperation);
-    console.log(inputOperation, this.state.display.slice(0, -1));
+
+    if (inputOperation === this.state.lastChar) {
+      return;
+    }
 
     if (this.state.lastChar === "=") {
       this.setState({
         memory: this.state.lastEvaluation.concat(inputOperation),
-        lastChar: inputOperation,
         display: inputOperation,
         isOperation: true,
-        isReset: true
+        isReset: true,
+        lastChar: inputOperation
       });
-    } else if (
-      inputOperation === this.state.display ||
-      inputOperation === this.state.display.slice(0, -1)
-    ) {
-      return;
     } else if (!this.state.isOperation) {
       this.setState({
         memory: this.state.memory.concat(updatedDisplay),
@@ -100,31 +111,20 @@ class Calculator extends React.Component {
       this.setState({
         display: inputOperation,
         memory: this.state.memory.slice(0, -2).concat(inputOperation),
+        isReset: true,
+        isOperation: true,
         lastChar: inputOperation
       });
     }
   };
 
-  handleEquals = e => {
-    const input = e.currentTarget.getAttribute("value");
-
-    console.log(`input: ${input} lastchar: ${this.state.lastChar}`);
-    if (input === this.state.lastChar) {
-      return;
-    } else {
-      const answer = math.evaluate(
-        this.state.memory.concat(this.state.display)
-      );
-
-      const result = math.format(answer, { precision: 6 });
-      const resultString = result.toString();
-      this.setState({
-        display: resultString,
-        memory: `${this.state.memory}${this.state.display} = ${resultString}`,
-        lastEvaluation: resultString,
-        lastChar: input
-      });
-    }
+  evaluateAndFormatExpression = () => {
+    const result = math.format(
+      math.evaluate(this.state.memory.concat(this.state.display), {
+        precision: 6
+      })
+    );
+    return result.toString();
   };
 
   checkZerosandPeriods = (inputNumber, display) => {
@@ -136,20 +136,24 @@ class Calculator extends React.Component {
     }
   };
 
-  checkDisplayLength = () => {
-    return this.state.display.length > 22;
+  checkDisplayLength = display => {
+    return display.length > 22;
   };
 
-  showDisplayLimitReached = () =>{
-    const originalDisplay = this.state.display
-    
+  showDisplayLimitReached = display => {
+    const originalDisplay = display;
+
     this.setState({
       display: "Display Limit Met"
-    })
-    setTimeout(() => this.setState({
-      display:originalDisplay,
-    }), 1000);
-  }
+    });
+    setTimeout(
+      () =>
+        this.setState({
+          display: originalDisplay
+        }),
+      1000
+    );
+  };
 
   render() {
     console.log(math.evaluate("5 * - + 5"));
@@ -162,119 +166,11 @@ class Calculator extends React.Component {
                 display={this.state.display}
                 memory={this.state.memory}
               />
-            </div>
-          </div>
-
-          <div className="flex  mx-1 my-2">
-            <div className="flex-column w-2/4 pl-1">
-              <div className="">
-                <div className="">
-                  <Key
-                    wide
-                    color="red"
-                    id="clear"
-                    handleClick={this.handleClear}
-                    value={"A/C"}
-                  />
-                </div>
-              </div>
-
-              <div className="">
-                <div className="flex">
-                  <Key id="seven" handleClick={this.handleNumber} value={7} />
-                  <Key id="eight" handleClick={this.handleNumber} value={8} />
-                </div>
-              </div>
-              <div className="">
-                <div className="flex">
-                  <Key id="four" handleClick={this.handleNumber} value={4} />
-                  <Key id="five" handleClick={this.handleNumber} value={5} />
-                </div>
-              </div>
-              <div className="">
-                <div className="flex">
-                  <Key id="one" handleClick={this.handleNumber} value={1} />
-                  <Key id="two" handleClick={this.handleNumber} value={2} />
-                </div>
-              </div>
-              <div className="">
-                <div className="">
-                  <Key
-                    wide
-                    id="zero"
-                    handleClick={this.handleNumber}
-                    value={0}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex-column w-1/4">
-              <div className="">
-                <Key
-                  wide
-                  color="light-grey"
-                  id="divide"
-                  handleClick={this.handleOperation}
-                  value={"/"}
-                />
-              </div>
-
-              <div className="">
-                <div className="">
-                  <Key
-                    wide
-                    id="nine"
-                    handleClick={this.handleNumber}
-                    value={9}
-                  />
-                </div>
-              </div>
-
-              <Key wide id="six" handleClick={this.handleNumber} value={6} />
-
-              <Key wide id="three" handleClick={this.handleNumber} value={3} />
-
-              <Key
-                wide
-                id="decimal"
-                handleClick={this.handleNumber}
-                value={"."}
-              />
-            </div>
-
-            <div className="flex-column w-1/4 pr-1">
-              <Key
-                wide
-                color="light-grey"
-                id="multiply"
-                handleClick={this.handleOperation}
-                value={"*"}
-              />
-
-              <Key
-                wide
-                color="light-grey"
-                id="subtract"
-                handleClick={this.handleOperation}
-                value={"-"}
-              />
-
-              <Key
-                wide
-                color="light-grey"
-                id="add"
-                handleClick={this.handleOperation}
-                value={"+"}
-              />
-
-              <Key
-                wide
-                color="blue"
-                id="equals"
-                handleClick={this.handleEquals}
-                style={{ height: "6.0rem" }}
-                value={"="}
+              <Keyboard
+                handleClear={this.handleClear}
+                handleEquals={this.handleEquals}
+                handleOperation={this.handleOperation}
+                handleNumber={this.handleNumber}
               />
             </div>
           </div>
