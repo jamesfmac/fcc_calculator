@@ -2,8 +2,9 @@ import React from "react";
 import Keyboard from "./Keyboard";
 import Display from "./Display";
 
-import { ReactComponent as Logo } from "../tailwindcss-logo.svg";
-import { ReactComponent as ReactLogo } from "../react-logo.svg";
+import { ReactComponent as TailwindLogo } from "../images/tailwindcss-logo.svg";
+import { ReactComponent as ReactLogo } from "../images/react-logo.svg";
+import { ReactComponent as MathjsLogo } from "../images/mathjs-logo.svg";
 
 import * as math from "mathjs";
 
@@ -161,9 +162,9 @@ class Calculator extends React.Component {
   render() {
     console.log(math.evaluate("5 * - + 5"));
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-200 h-vh">
-        <div className="flex-column text-white align-middle text-center">
-          <div className="flex-column text-white align-middle text-center bg-black w-64 h-auto border rounded shadow-md ">
+      <div className="flex items-center justify-center h-screen bg-gray-200 ">
+        <div className="flex-column text-white align-middle text-center w-64">
+          <div className="flex-column text-white align-middle text-center bg-black h-auto border rounded shadow-md ">
             <div className="flex mx-1 mt-2">
               <div className="w-4/4 px-1 flex-grow ">
                 <Display
@@ -179,16 +180,31 @@ class Calculator extends React.Component {
               </div>
             </div>
           </div>
-
-          <div className=" mt-4 text-gray-800 text-left">
-            Coded by James McManamey
-          </div>
-          <div className="flex items-center ">
-            <div className="h-8 w-2/5">
-              <Logo />
+          <div className ="mt-16">
+            <div className="font-mono text-center text-gray-800 font-medium text-xs ">
+              Created with
             </div>
-            <div className="h-8 w-2/5">
-              <ReactLogo />
+            <div
+              className="flex items-center content-center"
+              style={{ filter: "grayscale(80%)" }}
+            >
+              <div className="flex h-12 w-1/3">
+                <TailwindLogo />
+              </div>
+
+              <div
+                className="flex content-center items-center justify-center h-12 w-1/3"
+                style={{ filter: "grayscale(80%)" }}
+              >
+                <ReactLogo />
+              </div>
+
+              <div
+                className="flex content-center items-center justify-center h-12 w-1/3"
+                style={{ filter: "grayscale(80%)" }}
+              >
+                <MathjsLogo />
+              </div>
             </div>
           </div>
         </div>
