@@ -1,4 +1,0 @@
-Project in (MYT, COM, MFA, HAB) AND issuetype in ('Story', 'Task', 'Bug') 
- AND status in ( 'Done', 'Resolved', 'Closed') 
- AND (status changed to ( 'Done', 'Resolved', 'Closed') 
- AFTER -1d OR ( status CHANGED DURING (-3d, endOfWeek(-1w) ) ))

@@ -2,6 +2,9 @@ import React from "react";
 import Keyboard from "./Keyboard";
 import Display from "./Display";
 
+import { ReactComponent as Logo } from "../tailwindcss-logo.svg";
+import { ReactComponent as ReactLogo } from "../react-logo.svg";
+
 import * as math from "mathjs";
 
 class Calculator extends React.Component {
@@ -159,19 +162,33 @@ class Calculator extends React.Component {
     console.log(math.evaluate("5 * - + 5"));
     return (
       <div className="flex items-center justify-center h-screen bg-gray-200 h-vh">
-        <div className="flex-column text-white align-middle text-center bg-black w-64 h-auto border rounded shadow-md ">
-          <div className="flex mx-1 mt-2">
-            <div className="w-4/4 px-1 flex-grow ">
-              <Display
-                display={this.state.display}
-                memory={this.state.memory}
-              />
-              <Keyboard
-                handleClear={this.handleClear}
-                handleEquals={this.handleEquals}
-                handleOperation={this.handleOperation}
-                handleNumber={this.handleNumber}
-              />
+        <div className="flex-column text-white align-middle text-center">
+          <div className="flex-column text-white align-middle text-center bg-black w-64 h-auto border rounded shadow-md ">
+            <div className="flex mx-1 mt-2">
+              <div className="w-4/4 px-1 flex-grow ">
+                <Display
+                  display={this.state.display}
+                  memory={this.state.memory}
+                />
+                <Keyboard
+                  handleClear={this.handleClear}
+                  handleEquals={this.handleEquals}
+                  handleOperation={this.handleOperation}
+                  handleNumber={this.handleNumber}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className=" mt-4 text-gray-800 text-left">
+            Coded by James McManamey
+          </div>
+          <div className="flex items-center ">
+            <div className="h-8 w-2/5">
+              <Logo />
+            </div>
+            <div className="h-8 w-2/5">
+              <ReactLogo />
             </div>
           </div>
         </div>
