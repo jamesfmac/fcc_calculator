@@ -1,10 +1,7 @@
 import React from "react";
 import Keyboard from "./Keyboard";
 import Display from "./Display";
-
-import { ReactComponent as TailwindLogo } from "../images/tailwindcss-logo.svg";
-import { ReactComponent as ReactLogo } from "../images/react-logo.svg";
-import { ReactComponent as MathjsLogo } from "../images/mathjs-logo.svg";
+import Footer from "./Footer";
 
 import * as math from "mathjs";
 
@@ -34,10 +31,14 @@ class Calculator extends React.Component {
 
   handleEquals = e => {
     const input = e.currentTarget.getAttribute("value");
+    const result = this.evaluateAndFormatExpression();
+
     if (input === this.state.lastChar || isNaN(this.state.display)) {
       return;
     }
-    const result = this.evaluateAndFormatExpression();
+    if (this.checkDisplayLimit(this.state.display)) {
+      return;
+    }
 
     this.setState({
       display: result,
@@ -53,7 +54,11 @@ class Calculator extends React.Component {
     let newDisplay = "";
 
     if (this.checkDisplayLength(this.state.display)) {
-      this.showDisplayLimitReached();
+      this.showDisplayLimitReached(this.state.display);
+      return;
+    }
+
+    if (this.checkDisplayLimit(this.state.display)) {
       return;
     }
 
@@ -84,6 +89,10 @@ class Calculator extends React.Component {
     const updatedDisplay = startingDisplay.concat(inputOperation);
 
     if (inputOperation === this.state.lastChar) {
+      return;
+    }
+
+    if (this.checkDisplayLimit(this.state.display)) {
       return;
     }
 
@@ -144,9 +153,12 @@ class Calculator extends React.Component {
     return display.length > 22;
   };
 
+  checkDisplayLimit = display => {
+    return display === "Display Limit Met";
+  };
+
   showDisplayLimitReached = display => {
     const originalDisplay = display;
-
     this.setState({
       display: "Display Limit Met"
     });
@@ -162,8 +174,8 @@ class Calculator extends React.Component {
   render() {
     console.log(math.evaluate("5 * - + 5"));
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-200 ">
-        <div className="flex-column text-white align-middle text-center w-64">
+      <div className="flex flex-col  items-center justify-center h-screen min-h-screen bg-gray-200 ">
+        <div className="flex flex-col flex-grow text-white align-middle justify-center text-center w-64">
           <div className="flex-column text-white align-middle text-center bg-black h-auto border rounded shadow-md ">
             <div className="flex mx-1 mt-2">
               <div className="w-4/4 px-1 flex-grow ">
@@ -180,34 +192,8 @@ class Calculator extends React.Component {
               </div>
             </div>
           </div>
-          <div className ="mt-16">
-            <div className="font-mono text-center text-gray-800 font-medium text-xs ">
-              Created with
-            </div>
-            <div
-              className="flex items-center content-center"
-              style={{ filter: "grayscale(80%)" }}
-            >
-              <div className="flex h-12 w-1/3">
-                <TailwindLogo />
-              </div>
-
-              <div
-                className="flex content-center items-center justify-center h-12 w-1/3"
-                style={{ filter: "grayscale(80%)" }}
-              >
-                <ReactLogo />
-              </div>
-
-              <div
-                className="flex content-center items-center justify-center h-12 w-1/3"
-                style={{ filter: "grayscale(80%)" }}
-              >
-                <MathjsLogo />
-              </div>
-            </div>
-          </div>
         </div>
+        <Footer />
       </div>
     );
   }
