@@ -172,7 +172,6 @@ class Calculator extends React.Component {
   };
 
   render() {
-    console.log(math.evaluate("5 * - + 5"));
     return (
       <div className="flex flex-col  items-center justify-center h-screen min-h-screen bg-gray-200 ">
         <div className="flex flex-col flex-grow text-white align-middle justify-center text-center w-64">

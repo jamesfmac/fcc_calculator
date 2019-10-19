@@ -44,7 +44,7 @@ class Keyboard extends React.Component {
             handleClick={this.props.handleOperation}
             value={"/"}
           />
-          <Key wide id="nine" handleClick={this.props.handleNumber} value={9} />
+          <Key wide id="nine" handleClick={this.props.handleNumber} data-testid = '9' value={9} />
           <Key wide id="six" handleClick={this.props.handleNumber} value={6} />
           <Key
             wide

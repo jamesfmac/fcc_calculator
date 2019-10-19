@@ -15,6 +15,7 @@ const Display = props => {
       </div>
       <div
         id="display"
+        data-testid = 'display'
         className="flex justify-end pr-1 text-white-600 font-mono items-center bg-black h-6"
       >
         {props.display}
